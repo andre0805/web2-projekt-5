@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/posts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>PhotoHub - Explore Posts</title>
+</head>
+<body>
+    <header>
+        <h1>PhotoHub</h1>
+        <div class="user-section">
+            <span>
+                Hi, <%= user.name %>
+            </span>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </header>
+    
+    <main>
+        <section class="add-post">
+            <a href="/new-post" class="add-post-button">Add New Post</a>
+        </section>
+
+        <h2>Explore Posts</h2>
+        <section class="posts">
+            <!-- Example Post -->
+            <% for (var i =1; i <=50;  i++ ) { %>
+            <a href="/post-detail">
+                <div class="post">
+                    <img src="../images/example.jpg" alt="Post Image">
+                    <div class="post-info">
+                        <div class="likes">
+                            <% if (Math.random() < 0.5) { %>
+                                <button class="like-button">
+                                    <i class="fas fa-heart"></i> <!-- Filled heart icon (hidden by default) -->
+                                </button>
+                            <% } else { %>
+                                <button class="like-button">
+                                    <i class="far fa-heart"></i> <!-- Outlined heart icon -->
+                                </button>
+                            <% } %>
+                            <span class="likes-count"><%= Math.round(Math.random() * 100) %></span>
+                        </div>
+
+                        <div class="author-info">
+                            <span><b>John Doe</b></span> 
+                            <span>June 1, 2023</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            <% } %>
+            <!-- Repeat the above structure for each post -->
+        </section>
+    </main>
+</body>
+</html>
