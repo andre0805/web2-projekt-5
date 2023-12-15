@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run clean && tsc && npm run copy-files && prisma generate && echo \"Build complete!\"",
     "clean": "rm -rf dist",
-    "copy-files": "mkdir -p dist/ && cp -r src/views/ dist/views/ && cp -r src/styles/ dist/styles/",
+    "copy-files": "mkdir -p dist/ && cp -r src/public/ dist/public/",
     "dev": "open -u http://localhost:3000 && nodemon src/server.ts",
     "start": "node dist/server.js"
   },

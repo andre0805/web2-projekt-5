@@ -9,11 +9,11 @@ const port = process.env.PORT || 3000;
 const baseURL = host == 'localhost' ? `http://${host}:${port}` : `https://${host}`;
 
 const app = express();
-const viewsPath = path.join(__dirname, 'views');
+const viewsPath = path.join(__dirname, '/public/views');
 app.set("views", viewsPath);
 app.set("view engine", "ejs");
-app.use("/styles", express.static(__dirname + '/styles'));
-app.use("/images", express.static(__dirname + '/images'));
+app.use("/styles", express.static(__dirname + '/public/styles'));
+app.use("/images", express.static(__dirname + '/public/images'));
 app.use(express.urlencoded({ extended: true }));
 
 dotenv.config()
