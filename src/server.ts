@@ -49,6 +49,11 @@ app.get("/posts", requiresAuth(), async (req, res) => {
     res.render("posts", { user: req.oidc.user });
 });
 
+app.get("/posts/:id", requiresAuth(), async (req, res) => {
+    console.log(JSON.stringify(req.oidc.user, null, 2));
+    res.render("post", { user: req.oidc.user });
+});
+
 app.get("/signup", (req, res) => {
     res.oidc.login({
         returnTo: req.get('referer') || '/',
