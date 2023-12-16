@@ -13,6 +13,7 @@ const app = express();
 const viewsPath = path.join(__dirname, '/public/views');
 app.set("views", viewsPath);
 app.set("view engine", "ejs");
+app.use("/scripts", express.static(__dirname + '/public/scripts'));
 app.use("/styles", express.static(__dirname + '/public/styles'));
 app.use("/images", express.static(__dirname + '/public/images'));
 app.use(express.urlencoded({ extended: true }));
@@ -70,6 +71,8 @@ app.get("/posts", requiresAuth(), async (req, res) => {
 });
 
 app.get("/posts/:id", requiresAuth(), async (req, res) => {
+    console.log("id", req.params.id);
+
     const post: Post | null = await prisma.posts.findUnique({
         include: {
             likes: true
@@ -94,6 +97,51 @@ app.get("/posts/:id", requiresAuth(), async (req, res) => {
     }
 
     res.render("post", { user: req.oidc.user, post: post });
+});
+
+app.get("/like/:postId", requiresAuth(), async (req, res) => {
+    const postId = req.params.postId;
+
+    const post: Post | null = await prisma.posts.findUnique({
+        include: {
+            likes: true
+        },
+        where: {
+            id: postId
+        }
+    })
+    .then((post) => {
+        if (post) {
+            const likes = post.likes.length;
+            const userLiked = post.likes.some((like) => like.user_id == req.oidc.user!.sub);
+            return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked);
+        } else {
+            return null;
+        }
+    });
+
+    if (!post) {
+        res.status(404).send("Post not found!");
+        return;
+    }
+
+    if (post.userLiked) {
+        await prisma.likes.deleteMany({
+            where: {
+                post_id: postId,
+                user_id: req.oidc.user!.sub
+            }
+        });
+    } else {
+        await prisma.likes.create({
+            data: {
+                post_id: postId,
+                user_id: req.oidc.user!.sub
+            }
+        });
+    }
+
+    res.status(200).send();
 });
 
 app.get("/signup", (req, res) => {

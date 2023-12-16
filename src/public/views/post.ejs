@@ -29,15 +29,13 @@
                     
                     <div class="post-info">
                         <div class="likes">
-                            <% if (post.userLiked) { %>
-                                <button class="like-button">
+                            <button id= "like-button" class="like-button" data-post_id=<%= post.id %>>
+                                <% if (post.userLiked) { %>
                                     <i class="fas fa-heart"></i> <!-- Filled heart icon (hidden by default) -->
-                                </button>
-                            <% } else { %>
-                                <button class="like-button">
+                                <% } else { %>
                                     <i class="far fa-heart"></i> <!-- Outlined heart icon -->
-                                </button>
-                            <% } %>
+                                <% } %>
+                            </button>
                             <span class="likes-count"><%= post.likes %></span>
                         </div>
         
