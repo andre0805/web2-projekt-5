@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../styles/post.css">
     <!-- Include Font Awesome CSS (you can replace this with your preferred method) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="../scripts/post.js"></script>
     <title>PhotoHub - Post</title>
 </head>
 <body>
@@ -24,31 +25,31 @@
         <section class="post">
             
             <div class="post-content">
-                <img src="../images/example.jpg" alt="Post Image">
-                
-                <div class="post-info">
-                    <div class="likes">
-                        <% if (Math.random() < 0.5) { %>
-                            <button class="like-button">
-                                <i class="fas fa-heart"></i> <!-- Filled heart icon (hidden by default) -->
-                            </button>
-                        <% } else { %>
-                            <button class="like-button">
-                                <i class="far fa-heart"></i> <!-- Outlined heart icon -->
-                            </button>
-                        <% } %>
-                        <span class="likes-count"><%= Math.round(Math.random() * 100) %></span>
-                    </div>
-    
-                    <div class="author-info">
-                        <p class="author">John Doe</p>
-                        <p class="date">June 1, 2023</p>
+                    <img src="../images/example.jpg" alt="Post Image">
+                    
+                    <div class="post-info">
+                        <div class="likes">
+                            <% if (post.userLiked) { %>
+                                <button class="like-button">
+                                    <i class="fas fa-heart"></i> <!-- Filled heart icon (hidden by default) -->
+                                </button>
+                            <% } else { %>
+                                <button class="like-button">
+                                    <i class="far fa-heart"></i> <!-- Outlined heart icon -->
+                                </button>
+                            <% } %>
+                            <span class="likes-count"><%= post.likes %></span>
+                        </div>
+        
+                        <div class="author-info">
+                            <p class="author"><%= post.author %></p>
+                            <p class="date"><%= post.dateString %></p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <h3>Beautiful Sunset</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis...</p>
+            <h3><%= post.title %></h2>
+            <p><%= post.description %></p>
 
         </section>
     </main>

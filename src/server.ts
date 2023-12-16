@@ -3,6 +3,7 @@ import { auth, requiresAuth } from 'express-openid-connect';
 import path from 'path';
 import dotenv from 'dotenv'
 import { PrismaClient } from '@prisma/client';
+import Post from './models/Post';
 
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || 3000;
@@ -32,6 +33,8 @@ const config = {
     },
 };
 
+const prisma = new PrismaClient();
+
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
 
@@ -45,13 +48,52 @@ app.get("/", (req, res) => {
 });
 
 app.get("/posts", requiresAuth(), async (req, res) => {
-    console.log(JSON.stringify(req.oidc.user, null, 2));
-    res.render("posts", { user: req.oidc.user });
+    const posts: Post[] = await prisma.posts.findMany({
+        include: {
+            likes: true
+        },
+        orderBy: {
+            published_at: 'desc'
+        }
+    })
+    .then((posts) => {
+        return posts.map((post) => {
+            const likes = post.likes.length;
+            const userLiked = post.likes.some((like) => like.user_id == req.oidc.user!.sub);
+            return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked);
+        });
+    });
+
+    // console.log(JSON.stringify(posts, null, 2));
+    
+    res.render("posts", { user: req.oidc.user, posts: posts });
 });
 
 app.get("/posts/:id", requiresAuth(), async (req, res) => {
-    console.log(JSON.stringify(req.oidc.user, null, 2));
-    res.render("post", { user: req.oidc.user });
+    const post: Post | null = await prisma.posts.findUnique({
+        include: {
+            likes: true
+        },
+        where: {
+            id: req.params.id
+        }
+    })
+    .then((post) => {
+        if (post) {
+            const likes = post.likes.length;
+            const userLiked = post.likes.some((like) => like.user_id == req.oidc.user!.sub);
+            return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked);
+        } else {
+            return null;
+        }
+    });
+
+    if (!post) {
+        res.status(404).send("Post not found!");
+        return;
+    }
+
+    res.render("post", { user: req.oidc.user, post: post });
 });
 
 app.get("/signup", (req, res) => {

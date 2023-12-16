@@ -26,14 +26,14 @@
         <h2>Explore Posts</h2>
         <section class="posts">
             <!-- Example Post -->
-            <% for (var i =1; i <=50;  i++ ) { %>
-            <a href="/posts/1">
+            <% for (post of posts) { %>
+            <a href=<%= "/posts/" + post.id%>>
                 <div class="post">
                     <img src="../images/example.jpg" alt="Post Image">
                     
                     <div class="post-info">
                         <div class="likes">
-                            <% if (Math.random() < 0.5) { %>
+                            <% if (post.userLiked) { %>
                                 <button class="like-button">
                                     <i class="fas fa-heart"></i> <!-- Filled heart icon (hidden by default) -->
                                 </button>
@@ -42,12 +42,12 @@
                                     <i class="far fa-heart"></i> <!-- Outlined heart icon -->
                                 </button>
                             <% } %>
-                            <span class="likes-count"><%= Math.round(Math.random() * 100) %></span>
+                            <span class="likes-count"><%= post.likes %></span>
                         </div>
         
                         <div class="author-info">
-                            <p class="author">John Doe</p>
-                            <p class="date">June 1, 2023</p>
+                            <p class="author"><%= post.author %></p>
+                            <p class="date"><%= post.dateString %></p>
                         </div>
                     </div>
                 </div>
