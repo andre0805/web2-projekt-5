@@ -27,9 +27,10 @@
         <section class="posts">
             <!-- Example Post -->
             <% for (var i =1; i <=50;  i++ ) { %>
-            <a href="/post-detail">
+            <a href="/posts/1">
                 <div class="post">
                     <img src="../images/example.jpg" alt="Post Image">
+                    
                     <div class="post-info">
                         <div class="likes">
                             <% if (Math.random() < 0.5) { %>
@@ -43,10 +44,10 @@
                             <% } %>
                             <span class="likes-count"><%= Math.round(Math.random() * 100) %></span>
                         </div>
-
+        
                         <div class="author-info">
-                            <span><b>John Doe</b></span> 
-                            <span>June 1, 2023</span>
+                            <p class="author">John Doe</p>
+                            <p class="date">June 1, 2023</p>
                         </div>
                     </div>
                 </div>
