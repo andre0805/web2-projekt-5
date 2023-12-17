@@ -16,9 +16,7 @@ const app = express();
 const viewsPath = path.join(__dirname, '/public/views');
 app.set("views", viewsPath);
 app.set("view engine", "ejs");
-app.use("/scripts", express.static(__dirname + '/public/scripts'));
-app.use("/styles", express.static(__dirname + '/public/styles'));
-app.use("/uploads", express.static(__dirname + '/public/uploads'));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.json());
