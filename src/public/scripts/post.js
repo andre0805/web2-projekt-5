@@ -7,6 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     likeButton.onclick = async function () {
         const postId = likeButton.dataset.post_id;
         await fetch(`/like/${postId}`)
-        location.reload();
+        window.location.reload();
     }
 });

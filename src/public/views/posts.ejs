@@ -25,11 +25,10 @@
 
         <h2>Explore Posts</h2>
         <section class="posts">
-            <!-- Example Post -->
             <% for (post of posts) { %>
             <a href=<%= "/posts/" + post.id%>>
                 <div class="post">
-                    <img src="../images/example.jpg" alt="Post Image">
+                    <img src=<%= post.imageUrl %> alt="Post Image">
                     
                     <div class="post-info">
                         <div class="likes">
@@ -51,7 +50,6 @@
                 </div>
             </a>
             <% } %>
-            <!-- Repeat the above structure for each post -->
         </section>
     </main>
 </body>
