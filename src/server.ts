@@ -3,6 +3,9 @@ import { auth, requiresAuth } from 'express-openid-connect';
 import path from 'path';
 import dotenv from 'dotenv'
 import { PrismaClient } from '@prisma/client';
+import multer from 'multer';
+import bodyParser from 'body-parser';
+import fs from 'fs';
 import Post from './models/Post';
 
 const host = process.env.HOST || 'localhost';
@@ -15,8 +18,10 @@ app.set("views", viewsPath);
 app.set("view engine", "ejs");
 app.use("/scripts", express.static(__dirname + '/public/scripts'));
 app.use("/styles", express.static(__dirname + '/public/styles'));
-app.use("/images", express.static(__dirname + '/public/images'));
-app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(__dirname + '/public/uploads'));
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(express.json());
 
 dotenv.config()
 
@@ -36,6 +41,17 @@ const config = {
 
 const prisma = new PrismaClient();
 
+const UPLOAD_PATH = path.join(__dirname, "public", "uploads");
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, UPLOAD_PATH)
+    },
+    filename: function (req, file, cb) {
+        cb(null, req.body.id + '.jpg')
+    }
+})
+const upload = multer({ storage: storage }).single('image');
+
 // auth router attaches /login, /logout, and /callback routes to the baseURL
 app.use(auth(config));
 
@@ -43,7 +59,6 @@ app.get("/", (req, res) => {
     if (req.oidc.isAuthenticated()) {
         res.redirect("/posts");
     } else {
-        console.log(JSON.stringify(req.oidc.user, null, 2));
         res.render("index", { user: req.oidc.user });
     }
 });
@@ -54,25 +69,46 @@ app.get("/posts", requiresAuth(), async (req, res) => {
             likes: true
         },
         orderBy: {
-            published_at: 'desc'
+            published_at: 'asc'
         }
     })
     .then((posts) => {
         return posts.map((post) => {
             const likes = post.likes.length;
             const userLiked = post.likes.some((like) => like.user_id == req.oidc.user!.sub);
-            return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked);
+            const imagePath = path.join(__dirname, 'public', 'uploads', `${post.id}.jpg`);
+            const imageUrl = fs.existsSync(imagePath) ? `../uploads/${post.id}.jpg` : '../uploads/default.png'
+
+            return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked, imageUrl);
         });
     });
-
-    // console.log(JSON.stringify(posts, null, 2));
     
-    res.render("posts", { user: req.oidc.user, posts: posts });
+    res.render("posts", { user: req.oidc.user, posts: posts.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime()) });
+});
+
+app.post("/posts", requiresAuth(), async (req, res) => {
+    upload(req, res, async (err) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        } else {
+            await prisma.posts.create({
+                data: {
+                    id: req.body.id,
+                    author: req.oidc.user!.name,
+                    title: req.body.title,
+                    description: req.body.description
+                }
+            })
+            .then((post) => {
+                console.log("Post created: ", post);
+                res.redirect(`/posts/${post.id}`);
+            })
+        }
+    });
 });
 
 app.get("/posts/:id", requiresAuth(), async (req, res) => {
-    console.log("id", req.params.id);
-
     const post: Post | null = await prisma.posts.findUnique({
         include: {
             likes: true
@@ -85,7 +121,10 @@ app.get("/posts/:id", requiresAuth(), async (req, res) => {
         if (post) {
             const likes = post.likes.length;
             const userLiked = post.likes.some((like) => like.user_id == req.oidc.user!.sub);
-            return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked);
+            const imagePath = path.join(__dirname, 'public', 'uploads', `${post.id}.jpg`);
+            const imageUrl = fs.existsSync(imagePath) ? `../uploads/${post.id}.jpg` : '../uploads/default.png'
+
+            return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked, imageUrl);
         } else {
             return null;
         }
@@ -131,17 +170,28 @@ app.get("/like/:postId", requiresAuth(), async (req, res) => {
                 post_id: postId,
                 user_id: req.oidc.user!.sub
             }
+        })
+        .then((like) => {
+            console.log("Like created: ", like);
         });
+        
     } else {
         await prisma.likes.create({
             data: {
                 post_id: postId,
                 user_id: req.oidc.user!.sub
             }
+        })
+        .then((like) => {
+            console.log("Like created: ", like);
         });
     }
-
+    
     res.status(200).send();
+});
+
+app.get("/new-post", requiresAuth(), (req, res) => {
+    res.render("new_post", { user: req.oidc.user });
 });
 
 app.get("/signup", (req, res) => {
