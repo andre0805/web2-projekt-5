@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/new_post.css">
+    <!-- Include Font Awesome CSS (you can replace this with your preferred method) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" />
+    <script src="../scripts/new_post.js"></script>
+    <title>PhotoHub - New Post</title>
+</head>
+<body>
+    <header>
+        <h1>PhotoHub</h1>
+        <div class="user-section">
+            <span>
+                Hi, <%= user.name %>
+            </span>
+            <a href="/logout"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </header>
+
+    <main>
+        <div class="post-form">
+            <h2>Add New Post</h2>
+            <form >
+                <label for="system_image">Choose or capture an image:</label>
+                <input type="file" id="system_image" name="image" accept="image/*" capture="camera">
+                
+                <div id="snap_photo">
+                    <div id="before_snap">
+                        <video id="player" width="100%" autoplay></video>
+                        <div class="button-wrapper">
+                            <button type= "button" id="snap_button">
+                                <i class="bi bi-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="after_snap" hidden>
+                        <canvas id="canvas">Your browser does not support canvas API</canvas>
+                    </div>
+                </div>
+                
+                
+                <input type="text" id="title" placeholder="Title" name="title" required>
+
+                <textarea id="description" placeholder="Description" name="description"></textarea>
+
+                <div class="button-wrapper">
+                    <button type="button" id="upload_button">Post</button>
+                </div>
+            </form>
+        </div>   
+    </main>
+</body>
+</html>
