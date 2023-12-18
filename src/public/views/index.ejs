@@ -25,10 +25,10 @@
             <a href="/signup">Register</a>
         </div>
     </section>
-    
+
     <script>
         navigator.serviceWorker
-            .register("../../sw.js", { type: "module", scope: "/" })
+            .register("../scripts/sw.js", { type: "module" })
             .then((reg) => console.log("SW registered!", reg))
             .catch((err) =>
                 console.error("Error registering service worker", err)

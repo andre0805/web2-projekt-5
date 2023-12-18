@@ -1,21 +1,23 @@
-const cacheName = "cache-v7";
+import { del, entries } from "../index_db.js";
+
+const cacheName = "cache-v8";
 
 const filesToCache = [
     '/',
-    'manifest.json',
-    'views/new_post.ejs',
-    'views/offline.html',
-    'views/not_found.ejs',
-    'styles/index.css',
-    'styles/posts.css',
-    'styles/new_post.css',
-    'styles/offline.css',
-    'styles/not_found.css',
-    'scripts/index.js',
-    'scripts/posts.js',
-    'scripts/new_post.js',
-    'assets/favicon.ico',
-    'uploads/default.png'
+    '../manifest.json',
+    '../views/new_post.ejs',
+    '../views/offline.html',
+    '../views/not_found.ejs',
+    '../styles/index.css',
+    '../styles/posts.css',
+    '../styles/new_post.css',
+    '../styles/offline.css',
+    '../styles/not_found.css',
+    '../scripts/index.js',
+    '../scripts/posts.js',
+    '../scripts/new_post.js',
+    '../assets/favicon.ico',
+    '../uploads/default.png'
 ]
 
 self.addEventListener("install", (event) => {
@@ -92,3 +94,39 @@ self.addEventListener("fetch", (event) => {
         event.respondWith(fetch(event.request));
     }
 });
+
+self.addEventListener("sync", function (event) {
+    console.log("Background sync!", event);
+
+    if (event.tag === "sync-new-post") {
+        event.waitUntil(syncPosts());
+    }
+});
+
+let syncPosts = async function () {
+    entries().then((entries) => {
+        entries.forEach((entry) => {
+            const formData = new FormData();
+            formData.append("id", entry[1].id);
+            formData.append("title", entry[1].title);
+            formData.append("description", entry[1].description);
+            formData.append("image", entry[1].image);
+
+            fetch("/posts", {
+                method: "POST",
+                body: formData
+            })
+                .then(function (res) {
+                    if (res.ok) {
+                        console.log("Deleting from IndexDB: ", entry[1].id);
+                        del(entry[1].id);
+                    } else {
+                        console.log(res);
+                    }
+                })
+                .catch((error) => {
+                    console.log('Error:', error);
+                });
+        });
+    });
+};
