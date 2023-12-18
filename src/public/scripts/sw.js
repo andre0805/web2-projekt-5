@@ -17,7 +17,7 @@ const filesToCache = [
     '../scripts/posts.js',
     '../scripts/new_post.js',
     '../assets/favicon.ico',
-    '../assets/default.png'
+    '../uploads/default.png'
 ]
 
 self.addEventListener("install", (event) => {

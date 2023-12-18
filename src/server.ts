@@ -75,7 +75,7 @@ app.get("/posts", requiresAuth(), async (req, res) => {
             const likes = post.likes.length;
             const userLiked = post.likes.some((like) => like.user_id == req.oidc.user!.sub);
             const imagePath = path.join(__dirname, 'public', 'uploads', `${post.id}.jpg`);
-            const imageUrl = fs.existsSync(imagePath) ? `../uploads/${post.id}.jpg` : '../assets/default.png'
+            const imageUrl = fs.existsSync(imagePath) ? `../uploads/${post.id}.jpg` : '../uploads/default.png'
 
             return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked, imageUrl);
         });
@@ -120,7 +120,7 @@ app.get("/posts/:id", requiresAuth(), async (req, res) => {
             const likes = post.likes.length;
             const userLiked = post.likes.some((like) => like.user_id == req.oidc.user!.sub);
             const imagePath = path.join(__dirname, 'public', 'uploads', `${post.id}.jpg`);
-            const imageUrl = fs.existsSync(imagePath) ? `../uploads/${post.id}.jpg` : '../assets/default.png'
+            const imageUrl = fs.existsSync(imagePath) ? `../uploads/${post.id}.jpg` : '../uploads/default.png'
 
             return new Post(post.id, post.author, post.published_at, post.title, post.description, likes, userLiked, imageUrl);
         } else {
