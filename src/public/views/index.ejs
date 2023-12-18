@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/index.css">
+    <script src="../scripts/index.js"></script>
     <link rel="manifest" href="../manifest.json">
     <link rel="icon" type="image/x-icon" href="../assets/favicon.ico">
     <title>PhotoHub</title>
@@ -20,9 +21,18 @@
         <h2>Login or Register</h2>
         <p>Already a member? Log in below. New to our site? Register now!</p>
         <div class="auth-buttons">
-            <a href="/login">Login</a>
+            <a href="/login" id="login_button">Login</a>
             <a href="/signup">Register</a>
         </div>
     </section>
+    
+    <script>
+        navigator.serviceWorker
+            .register("../../sw.js", { type: "module", scope: "/" })
+            .then((reg) => console.log("SW registered!", reg))
+            .catch((err) =>
+                console.error("Error registering service worker", err)
+            );
+    </script>
 </body>
 </html>
