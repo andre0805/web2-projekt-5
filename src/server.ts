@@ -34,7 +34,7 @@ const config = {
     authorizationParams: {
         response_type: 'code',
         scope: 'openid profile email',
-    },
+    }
 };
 
 const prisma = new PrismaClient();
@@ -199,6 +199,10 @@ app.get("/signup", (req, res) => {
             screen_hint: "signup",
         },
     });
+});
+
+app.get("/*", (req, res) => {
+    res.status(404).render("not_found");
 });
 
 app.listen(port, () => {
