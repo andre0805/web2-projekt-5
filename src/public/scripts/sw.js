@@ -49,7 +49,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
     console.log("Fetch intercepted for: ", event.request.url);
 
-    if (!event.request.url.startsWith('http')) return;
+    // if (!event.request.url.startsWith('http')) return;
     
     if (
         event.request.url.includes('/') ||
